@@ -593,7 +593,7 @@ async function addProjectInline() {
   const name = document.getElementById('new-proj-name').value.trim();
   if (!name) return;
   try {
-    await apiCall({ action:'saveProject', data: JSON.stringify({ProjectName:name,Notes:''}) });
+    await apiCall({ action:'saveProject', data: JSON.stringify({ProjectNames:name,Notes:''}) });
     const pr = await apiCall({ action:'getProjects' });
     projects = (pr.data||[]).map(r=>({name:r.ProjectName||r.Name||r.name||'',notes:r.Notes||r.notes||''})).filter(p=>p.name);
     fillProjSel('lm-project', false);
@@ -774,7 +774,7 @@ function applyData(d){
     Prevention: r['Prevention Action']||r.Prevention||'',
   }));
   projects = (d.projects||[]).map(r=>({
-    name: r.ProjectName||r.Name||r.name||'',
+    name: r.ProjectNames||r.ProjectName||r.Name||r.name||'',
     notes: r.Notes||r.notes||'',
   })).filter(p=>p.name);
   renderAll();
@@ -1004,7 +1004,7 @@ async function saveProject(){
   if(!name){showToast('Project name is required',true);return;}
   if(orig){const i=projects.findIndex(p=>p.name===orig);if(i>-1)projects[i]={name,notes};else projects.push({name,notes});}
   else projects.push({name,notes});
-  closeProjectModal();renderProjects();clearCache();
+  closeProjectModal();renderProjects();renderLog();clearCache();
   try{await apiCall({action:'saveProject',data:JSON.stringify({ProjectName:name,Notes:notes})});showToast('Project saved');}
   catch(e){showToast('Save failed: '+e.message,true);}
 }
